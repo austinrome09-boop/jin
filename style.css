@@ -316,7 +316,7 @@ html {
     .menu-toggle {
         display: block;
         position: absolute;
-        top: 3rem;
+        top: 1.9rem;
         right: 2rem;
         z-index: 101;
         font-size: 2.5rem;
@@ -782,3 +782,4 @@ button {
     width: 100%;
   }
 }
+
