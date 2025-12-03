@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ & Live Mixing | jin.</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css"> <!-- Link to your main CSS -->
+    <style>
+        /* --- DJ Page Specific Styles --- */
+        
+        body {
+            background-color: #0a0a0a; /* Darker black for club vibe */
+        }
+
+        /* Hero Section */
+        .dj-hero {
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle, rgba(183,75,75,0.2) 0%, rgba(10,10,10,1) 70%);
+            padding-top: 8rem;
+        }
+
+        .dj-hero i {
+            font-size: 8rem;
+            color: var(--accent-color);
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .dj-hero h1 {
+            font-size: 6rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: #fff;
+            text-shadow: 0 0 20px var(--accent-color);
+        }
+
+        .dj-hero p {
+            font-size: 1.8rem;
+            color: #ccc;
+            max-width: 600px;
+            margin-top: 1rem;
+        }
+
+        /* Gallery Section (Moved Photos) */
+        .gallery-section {
+            padding: 5rem 9%;
+        }
+
+        .gallery-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 4rem;
+            color: var(--accent-color);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            border: 1px solid #333;
+            height: 350px; /* Fixed height for uniformity */
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            background: linear-gradient(transparent, black);
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        /* --- Music Player (Bottom Right) --- */
+        .music-player-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px 10px 10px;
+            border-radius: 50px;
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(183, 75, 75, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .music-player-container:hover {
+            transform: scale(1.05);
+        }
+
+        /* The Spinning Disc */
+        .vinyl-disc {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: url('icon.png'); /* Uses your logo or a vinyl image */
+            background-size: cover;
+            border: 2px solid var(--accent-color);
+            animation: spin 3s linear infinite;
+            animation-play-state: paused; /* Paused by default */
+        }
+
+        .vinyl-disc.playing {
+            animation-play-state: running;
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .track-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .player-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .control-btn:hover {
+            color: #fff;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .music-player-container {
+                bottom: 20px;
+                right: 20px;
+                padding: 10px;
+            }
+            .track-name { display: none; } /* Hide text on mobile to save space */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Back Button -->
+    <header style="position: absolute; background: transparent; box-shadow: none;">
+        <a href="index.html" class="logo">jin.</a>
+        <nav>
+            <a href="index.html#skills" style="color: #fff; border-bottom: 1px solid var(--accent-color);">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="dj-hero">
+        <i class="fas fa-compact-disc"></i>
+        <h1>DJ & Live Mixing</h1>
+        <p>Curating vibes, controlling the crowd, and creating unforgettable nights.</p>
+    </section>
+
+    <!-- Gallery Section (Photos Moved Here) -->
+    <section class="gallery-section">
+        <h2 class="gallery-title">EVENTS PLAYED AT</h2>
+        <div class="gallery-grid">
+            
+            <!-- Photo 1 -->
+            <div class="gallery-item">
+                <img src="slide1.jpg" alt="Live Set 1">
+                <div class="gallery-overlay">
+                    <h3>Live Set at POST CEREMONY</h3>
+                    <p>Live Cafe Set</p>
+                </div>
+            </div>
+
+            <!-- Photo 2 -->
+            <div class="gallery-item">
+                <img src="cf.png" alt="Live Set 2">
+                <div class="gallery-overlay">
+                    <h3>The Grind Set at half_____way</h3>
+                    <p>Live Cafe Set</p>
+                </div>
+            </div>
+
+            <!-- Photo 3 -->
+            <div class="gallery-item">
+                <img src="fwb.png" alt="Live Set 3">
+                <div class="gallery-overlay">
+                    <h3>FWIB Meetup</h3>
+                    <p>Corporate Event</p>
+                </div>
+            </div>
+
+            <!-- Photo 4 -->
+            <div class="gallery-item">
+                <img src="pcbs.jpg" alt="Live Set 4">
+                <div class="gallery-overlay">
+                    <h3>brew & spin at POST CEREMONY</h3>
+                    <p>Live Cafe Set</p>
+                </div>
+            </div>
+
+            <!-- Photo 5 -->
+            <div class="gallery-item">
+                <img src="majikasa.jpg" alt="Live Set 5">
+                <div class="gallery-overlay">
+                    <h3>Live Set at Majikasa</h3>
+                    <p>Live Cafe Set</p>
+                </div>
+            </div>
+
+            <!-- Photo 6 -->
+            <div class="gallery-item">
+                <img src="accents.jpg" alt="Live Set 6">
+                <div class="gallery-overlay">
+                    <h3>GALLERY NOISE at THE ACCENTS CAFE</h3>
+                    <p>Live Cafe Set</p>
+                </div>
+            </div>
+
+            <!-- Photo 7 -->
+            <div class="gallery-item">
+                <img src="juju.jpg" alt="Live Set 7">
+                <div class="gallery-overlay">
+                    <h3>Community Launch at Hausbyjuju</h3>
+                    <p>Live Cafe Set</p>
+                </div>
+            </div>
+
+            <!-- Photo 8 -->
+            <div class="gallery-item">
+                <img src="tg.jpg" alt="Live Set 8">
+                <div class="gallery-overlay">
+                    <h3>Merry Grounds Year-End Pop-up by The Gathering Grounds</h3>
+                    <p>Live Event</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Custom Music Player (Bottom Right) -->
+    <div class="music-player-container">
+        <!-- Rotating Disc -->
+        <div class="vinyl-disc" id="vinyl"></div>
+        
+        <div class="controls">
+            <span class="track-name">FWIB Live Set 2025</span>
+            <div class="player-btns">
+                <button class="control-btn" id="playPauseBtn">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="control-btn" id="muteBtn">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Audio Element (Hidden) -->
+        <!-- REPLACE 'mix.wav' WITH YOUR ACTUAL FILE NAME -->
+        <audio id="audioPlayer" loop>
+            <source src="FWIB SET.wav" type="audio/wav"> 
+            <source src="mix.mp3" type="audio/mp3"> <!-- Fallback -->
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+    <!-- Script for Player Logic -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const audio = document.getElementById("audioPlayer");
+            const playBtn = document.getElementById("playPauseBtn");
+            const playIcon = playBtn.querySelector("i");
+            const muteBtn = document.getElementById("muteBtn");
+            const muteIcon = muteBtn.querySelector("i");
+            const vinyl = document.getElementById("vinyl");
+
+            // Play / Pause Toggle
+            playBtn.addEventListener("click", () => {
+                if (audio.paused) {
+                    audio.play();
+                    playIcon.classList.remove("fa-play");
+                    playIcon.classList.add("fa-pause");
+                    vinyl.classList.add("playing");
+                } else {
+                    audio.pause();
+                    playIcon.classList.remove("fa-pause");
+                    playIcon.classList.add("fa-play");
+                    vinyl.classList.remove("playing");
+                }
+            });
+
+            // Mute / Unmute Toggle
+            muteBtn.addEventListener("click", () => {
+                audio.muted = !audio.muted;
+                if (audio.muted) {
+                    muteIcon.classList.remove("fa-volume-up");
+                    muteIcon.classList.add("fa-volume-mute");
+                } else {
+                    muteIcon.classList.remove("fa-volume-mute");
+                    muteIcon.classList.add("fa-volume-up");
+                }
+            });
+
+            // Set initial volume lower so it doesn't blast ears
+            audio.volume = 0.5; 
+        });
+    </script>
+
+</body>
+</html>

@@ -1,168 +1,143 @@
-let lastScrollTop = 0;
-const header = document.querySelector("header");
-const words = [
-    "Software QA Engineer",
-    "Software Developer",
-    "Social Media Manager",
-    "Video Editor",
-    "Graphic Designer",
-    "Private DJ",
-];
+document.addEventListener("DOMContentLoaded", function () {
+    
+    // --- 1. Typing Effect (SAFE VERSION) ---
+    // Only run this if the element exists on the current page
+    const typingElement = document.getElementById("dynamic-text");
+    
+    if (typingElement) {
+        const words = ["Software QA Engineer", "Web Developer", "DJ & Mixer", "Graphic Designer", "Video Editor"];
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
 
-const typingElement = document.getElementById("dynamic-text");
-let wordIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-const typingSpeed = 150;
-const deletingSpeed = 100;
-const delayBetweenWords = 1500;
+        function typeEffect() {
+            const currentWord = words[wordIndex];
+            
+            if (isDeleting) {
+                charIndex--;
+                typingElement.textContent = currentWord.substring(0, charIndex);
+            } else {
+                charIndex++;
+                typingElement.textContent = currentWord.substring(0, charIndex);
+            }
 
-function typeEffect() {
-    const currentWord = words[wordIndex];
-    if (!isDeleting) {
-        typingElement.textContent = currentWord.slice(0, charIndex + 1);
-        charIndex++;
-        if (charIndex === currentWord.length) {
-            isDeleting = true;
-            setTimeout(typeEffect, delayBetweenWords);
-            return;
+            if (!isDeleting && charIndex === currentWord.length) {
+                isDeleting = true;
+                setTimeout(typeEffect, 2000);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                setTimeout(typeEffect, 500);
+            } else {
+                setTimeout(typeEffect, isDeleting ? 100 : 200);
+            }
         }
-    } else {
-        typingElement.textContent = currentWord.slice(0, charIndex - 1);
-        charIndex--;
-        if (charIndex === 0) {
-            isDeleting = false;
-            wordIndex = (wordIndex + 1) % words.length;
-        }
-    }
-    setTimeout(typeEffect, isDeleting ? deletingSpeed : typingSpeed);
-}
-
-document.addEventListener("DOMContentLoaded", typeEffect);
-
-// Hide header on scroll down and show it on scroll up
-window.addEventListener("scroll", function () {
-    let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (currentScroll > lastScrollTop) {
-        header.style.top = "-100px";
-    } else {
-        header.style.top = "0";
+        typeEffect();
     }
 
-    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-});
 
-// Active Navigation Link Logic
-const navLinks = document.querySelectorAll("nav a");
-const sections = document.querySelectorAll("section");
+    // --- 2. Scroll Animation (Reveal on Scroll) ---
+    window.addEventListener('scroll', reveal);
 
-const observerOptions = {
-    threshold: 0.5,
-};
+    function reveal() {
+        var reveals = document.querySelectorAll('.reveal');
 
-const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-            const id = entry.target.id;
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                if (link.getAttribute("href") === `#${id}`) {
-                    link.classList.add("active");
-                }
-            });
+        for (var i = 0; i < reveals.length; i++) {
+            var windowHeight = window.innerHeight;
+            var revealTop = reveals[i].getBoundingClientRect().top;
+            var revealPoint = 150;
+
+            if (revealTop < windowHeight - revealPoint) {
+                reveals[i].classList.add('active');
+            } else {
+                // Optional: Remove else block if you want items to stay visible once revealed
+                reveals[i].classList.remove('active');
+            }
         }
-    });
-}, observerOptions);
+    }
+    // Trigger immediately to show elements already in view
+    reveal();
 
-sections.forEach((section) => sectionObserver.observe(section));
 
-// Select the 'About Me' section
-const aboutSection = document.querySelector(".about");
+    // --- 3. Mobile Menu Toggle ---
+    const menuToggle = document.querySelector(".menu-toggle");
+    const nav = document.querySelector("nav");
 
-if (aboutSection) {
-    const aboutObserver = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    // Show the 'About Me' section when it's in view
-                    aboutSection.classList.add("visible");
-                } else {
-                    // Hide the 'About Me' section when it's out of view
-                    aboutSection.classList.remove("visible");
-                }
+    if (menuToggle && nav) {
+        menuToggle.addEventListener("click", () => {
+            nav.classList.toggle("active");
+            const icon = menuToggle.querySelector('i');
+            if(icon) icon.classList.toggle('fa-times');
+        });
+
+        document.querySelectorAll("nav a").forEach((link) => {
+            link.addEventListener("click", () => {
+                nav.classList.remove("active");
+                const icon = menuToggle.querySelector('i');
+                if(icon) icon.classList.remove('fa-times');
             });
-        },
-        { threshold: 0.5 } // Trigger when 50% of the section is visible
-    );
+        });
+    }
 
-    // Observe the 'About Me' section
-    aboutObserver.observe(aboutSection);
-} else {
-    console.error("About section not found!");
-}
 
-// Select the home image
-const homeImage = document.querySelector(".home-img img");
+    // --- 4. Header Hide/Show on Scroll ---
+    let lastScrollTop = 0;
+    const header = document.querySelector("header");
+    
+    if (header) {
+        window.addEventListener("scroll", function () {
+            let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (currentScroll > lastScrollTop) {
+                header.style.top = "-100px"; // Hide
+            } else {
+                header.style.top = "0"; // Show
+            }
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+    }
 
-if (homeImage) {
-    const imageObserver = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    // Add scaling effect when in view
-                    homeImage.classList.add("scaling");
-                } else {
-                    // Remove scaling effect when out of view
-                    homeImage.classList.remove("scaling");
-                }
-            });
-        },
-        { threshold: 0.6 } // Trigger when 60% of the image is visible
-    );
 
-    // Observe the home image
-    imageObserver.observe(homeImage);
-} else {
-    console.error("Home image not found!");
-}
+    // --- 5. Contact Form (EmailJS) ---
+    const contactForm = document.getElementById("contact-form");
+    if (contactForm) {
+        contactForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const btn = contactForm.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "Sending...";
 
-const menuToggle = document.querySelector(".menu-toggle");
-const nav = document.querySelector("header nav");
+            // Make sure emailjs is defined before using it
+            if (typeof emailjs !== 'undefined') {
+                emailjs.sendForm("service_p4pi7r5", "template_1fvswrk", this)
+                    .then(() => {
+                        alert("Message sent successfully!");
+                        contactForm.reset();
+                        btn.innerText = originalText;
+                    })
+                    .catch((err) => {
+                        console.error("Failed", err);
+                        alert("Failed to send.");
+                        btn.innerText = originalText;
+                    });
+            } else {
+                console.error("EmailJS not loaded");
+                alert("Email service not available.");
+                btn.innerText = originalText;
+            }
+        });
+    }
 
-menuToggle.addEventListener("click", () => {
-    nav.classList.toggle("active"); // Show/hide navigation
-    menuToggle.classList.toggle("open"); // Optional: Add a class for styling the toggle button
+    // --- 6. Home Section Exit Animation ---
+    const homeSection = document.querySelector('.home');
+    if (homeSection) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                homeSection.classList.add('scrolled-out');
+            } else {
+                homeSection.classList.remove('scrolled-out');
+            }
+        });
+    }
+
 });
-
-// Close the menu when clicking on a link
-document.querySelectorAll("nav a").forEach((link) => {
-    link.addEventListener("click", () => {
-        nav.classList.remove("active"); // Close the menu
-    });
-});
-
-const slides = document.querySelectorAll('.slide');
-let current = 0;
-
-function updateSlides() {
-  slides.forEach((slide, i) => {
-    slide.classList.remove('active', 'next', 'prev');
-  });
-
-  slides[current].classList.add('active');
-  slides[(current + 1) % slides.length].classList.add('next');
-  slides[(current - 1 + slides.length) % slides.length].classList.add('prev');
-}
-
-document.getElementById('next').addEventListener('click', () => {
-  current = (current + 1) % slides.length;
-  updateSlides();
-});
-
-document.getElementById('prev').addEventListener('click', () => {
-  current = (current - 1 + slides.length) % slides.length;
-  updateSlides();
-});
-
-updateSlides();
